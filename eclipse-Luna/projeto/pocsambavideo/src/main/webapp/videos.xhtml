@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html >
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"	
+	>
+	
+<h:head>
+	<title>POC Sambatech Upload Videos</title>	
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"></link>	
+</h:head>
+<h:body>
+
+<div class="container">
+		
+	<div class="jumbotron text-center">
+		<h1>pocsambavideo</h1>
+	</div>
+	<br />
+	<h:form prependId="false">
+	<p:growl id="growl" showDetail="true" />
+	<div class="row">
+		<div class="col-md-12">			
+			<p:inputText value="#{videoFileController.keyConsulta}" size="50"></p:inputText>			
+			<p:commandButton value="Pesquisar" actionListener="#{videoFileController.find}" ajax="false"/>			
+			<p:commandButton value="Novo" type="button" onclick="PF('modalUpload').show();" />			
+		</div>		
+	</div>	
+	<div class="row">
+		<div style="height: 50px;"></div>	
+	</div>	
+	
+	<p:dataTable  value="#{videoFileController.listaVideosFile}" var="videoFile">
+			<f:facet name="header">
+	           	<h:outputText value="Arquivos de vídeos recuperados!" />
+	       	</f:facet>
+	       	<p:commandButton value="Ver" actionListener="#{videoFileController.find}"  />
+	       	<p:column headerText="Key">
+	       		<h:outputText value="#{videoFile.videoFileKey}" />
+	       	</p:column>
+	       	<p:column headerText="Size (MB)">
+	       		<h:outputText value="#{videoFile.videoFileTamanho}" />
+	       	</p:column>
+	       	<p:column headerText="">	       		
+	       		<p:commandButton value="Visualizar" actionListener="#{videoFileController.abrirArquivo(videoFile)}" onclick="PF('modalGeraUrl').show();" oncomplete="PF('modalGeraUrl').hide();"/>
+	       	</p:column>
+	       	<p:column headerText="">
+	       		<p:commandButton  value="Excluir" action="#{videoFileController.excluir(videoFile)}" update="@form" onclick="PF('modalExcluir').show();" oncomplete="PF('modalExcluir').hide();"/>	       		
+	       	</p:column>
+	   	</p:dataTable>		   	
+	</h:form>
+</div>
+</h:body>
+
+<p:dialog header="Upload vídeo" widgetVar="modalUpload" modal="true"
+	height="200" width="600">
+	<div style="height: 35px;">
+		<h:outputText value="Selecionar o arquivo vídeo que deseja efetuar o Upload." />
+	</div>
+	<br />
+	<h:form enctype="multipart/form-data">
+		<p:growl id="messages" showDetail="true" />
+
+		<div style="height: 65px;">
+			<p:fileUpload value="#{videoFileController.uploadVideoFile}" mode="simple" skinSimple="true" />
+		</div>
+		<div style="height: 65px;" align="left">			
+			<p:commandButton value="EnviarVideo" ajax="false"
+				actionListener="#{videoFileController.upload}" onclick="PF('modalEnviaArquivo').show();"/>			
+		</div>
+		
+	</h:form>
+</p:dialog>
+
+
+<p:dialog header="Enviando Arquivo" widgetVar="modalEnviaArquivo" modal="true" height="150" width="450">	
+	<div style="height: 35px;">	
+		O processamento de transferência de arquivos, aguarde alguns segundos!
+	</div>				
+</p:dialog>
+
+<p:dialog header="Processando URL" widgetVar="modalGeraUrl" modal="true" height="150" width="450">	
+	<div style="height: 35px;">	
+		Recuperando a URL do vídeo, aguarde alguns segundos!
+		
+	</div>				
+</p:dialog>
+
+<p:dialog header="Processando" widgetVar="modalExcluir" modal="true" height="150" width="450">	
+	<div style="height: 35px;">	
+		Processando...
+	</div>				
+</p:dialog>
+
+</html>
