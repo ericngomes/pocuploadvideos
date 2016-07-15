@@ -1,6 +1,4 @@
 package br.com.sambatech.poc.pocsambavideo.controll;
-import org.springframework.stereotype.Controller;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -38,7 +36,7 @@ public class VideoFileController implements Serializable {
 	private static final long serialVersionUID = -4428740370717617514L;
 	
 	@Autowired
-	private VideoFileService serviceVideo;	
+	private VideoFileService service;	
 	
 	private VideoFile videoFile;
 	
@@ -79,8 +77,8 @@ public class VideoFileController implements Serializable {
 	private void loadVideoSelecionado(VideoFile selectedArquivo) throws Exception {
 		setVideoSelecionado(selectedArquivo);
 		
-		if(serviceVideo.getUrlVideoOnAmazonS3(videoSelecionado) != null )
-			getVideoSelecionado().setVideoFileUrl(serviceVideo.getUrlVideoOnAmazonS3(videoSelecionado));
+		if(service.getUrlVideoOnAmazonS3(videoSelecionado) != null )
+			getVideoSelecionado().setVideoFileUrl(service.getUrlVideoOnAmazonS3(videoSelecionado));
 		else
 			throw new Exception("Erro ao gerar URL do video");
 	}
@@ -90,7 +88,7 @@ public class VideoFileController implements Serializable {
 	 */
 	public void upload(){
 		try{
-			serviceVideo.uploadVideoFile(uploadVideoFile);
+			service.uploadVideoFile(uploadVideoFile);
 			find();
 			showMessage("Upload realizado com sucesso!");
 		}
@@ -106,10 +104,10 @@ public class VideoFileController implements Serializable {
 	 */
 	public void find(){
 		if(StringUtils.hasText(chaveVideo)){
-			setArquivosList(serviceVideo.find(chaveVideo));
+			setArquivosList(service.find(chaveVideo));
 		}
 		else{
-			setArquivosList(serviceVideo.findAll());			
+			setArquivosList(service.findAll());			
 		}
 	}
 	
@@ -124,7 +122,7 @@ public class VideoFileController implements Serializable {
 	 * Exclui o arquivo selecionado e atualiza a listagem.
 	 */
 	public void excluir(VideoFile selectedArquivo){
-		serviceVideo.excluirVideoFile(selectedArquivo);
+		service.excluirVideoFile(selectedArquivo);
 		find();
 		showMessage("Video excluido com sucesso!");
 	}
@@ -147,13 +145,6 @@ public class VideoFileController implements Serializable {
 		this.listaVideosFile = arquivosList;
 	}
 
-	public VideoFileService getServiceVideo() {
-		return serviceVideo;
-	}
-
-	public void setServiceVideo(VideoFileService serviceVideo) {
-		this.serviceVideo = serviceVideo;
-	}
 
 	public VideoFile getVideoFile() {
 		return videoFile;
