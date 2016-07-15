@@ -1,5 +1,6 @@
 package br.com.sambatech.poc.pocsambavideo.controll;
 import org.springframework.stereotype.Controller;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -53,7 +54,13 @@ public class VideoFileController implements Serializable {
 	
 	public void abrirArquivo(VideoFile selectedArquivo){
 		
-		loadVideoSelecionado(selectedArquivo);
+		try {
+		
+			loadVideoSelecionado(selectedArquivo);
+		
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		
 		logger.info("URL do video: " + videoSelecionado.getVideoFileUrl());
 		
@@ -69,9 +76,13 @@ public class VideoFileController implements Serializable {
 		}		
 	}
 
-	private void loadVideoSelecionado(VideoFile selectedArquivo) {
+	private void loadVideoSelecionado(VideoFile selectedArquivo) throws Exception {
 		setVideoSelecionado(selectedArquivo);
-		getVideoSelecionado().setVideoFileUrl(serviceVideo.getUrlFile(videoSelecionado));
+		
+		if(serviceVideo.getUrlVideoOnAmazonS3(videoSelecionado) != null )
+			getVideoSelecionado().setVideoFileUrl(serviceVideo.getUrlVideoOnAmazonS3(videoSelecionado));
+		else
+			throw new Exception("Erro ao gerar URL do video");
 	}
 	
 	/**
