@@ -1,13 +1,25 @@
 package br.com.sambatech.poc.pocsambavideo.service;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.primefaces.model.UploadedFile;
+import org.springframework.stereotype.Service;
 
 import javax.faces.context.FacesContext;
 
@@ -213,8 +225,64 @@ public class VideoFileServiceImpl implements VideoFileService {
 	}
 
 	
-	public String getUrlFile(VideoFile file) {
-		// TODO Auto-generated method stub
+	@SuppressWarnings({ "deprecation", "resource" })
+	public String getUrlVideoOnAmazonS3(VideoFile arquivoVideo) {
+		try {
+			HttpClient client = new DefaultHttpClient();
+			
+			HttpPost httpPost = buildHttpPost();
+
+			JSONObject objetoJson = new JSONObject();
+			JSONArray outputs = new JSONArray();
+			JSONObject controleAcessoJson = new JSONObject();
+			controleAcessoJson.put("permission", READ_PERMISSION);
+			controleAcessoJson.put("grantee",FormataParametrosUtil.recupera(PARAM_ZENCODER_GRANTEE));
+			outputs.put(controleAcessoJson);
+			
+			buildObjetoJson(arquivoVideo, objetoJson, outputs);
+
+			StringEntity se = new StringEntity(objetoJson.toString());
+			httpPost.setEntity(se);
+
+			HttpResponse response = client.execute(httpPost);
+
+			BufferedReader rd = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent()));
+
+			StringBuffer result = new StringBuffer();
+			String line = StringUtils.EMPTY;
+			while ((line = rd.readLine()) != null) {
+				result.append(line);
+			}
+
+			JSONObject json = new JSONObject(result.toString());
+			JSONArray outputsResponse = new JSONArray(json.get("outputs").toString());
+			if (outputsResponse.length() > 0) {
+				JSONObject resultado = outputsResponse.getJSONObject(0);
+				return resultado.getString("url");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
+	}
+
+	private void buildObjetoJson(VideoFile arquivoVideo, JSONObject objetoJson,
+			JSONArray outputs) {
+		objetoJson.put("test", "true");
+		objetoJson.put("input", FormataParametrosUtil.recupera(PARAM_BUCKET_URL)
+				+ arquivoVideo.getVideoFileKey());
+		objetoJson.put("outputs", outputs);
+	}
+
+	private HttpPost buildHttpPost() {
+		HttpPost httpPost = new HttpPost(
+				FormataParametrosUtil.recupera(PARAM_ZENCODER_URL));
+		
+		httpPost.setHeader("Content-Type", "application/json");
+		httpPost.setHeader("Zencoder-Api-Key",
+				FormataParametrosUtil.recupera(PARAM_ZENCODER_KEY));
+		return httpPost;
 	}
 }

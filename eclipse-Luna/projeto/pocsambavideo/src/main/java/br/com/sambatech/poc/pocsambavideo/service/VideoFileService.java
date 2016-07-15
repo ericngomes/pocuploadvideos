@@ -43,7 +43,7 @@ public interface VideoFileService {
 	 * @param file
 	 * @return
 	 */
-	public String getUrlFile(VideoFile file);
+	public String getUrlVideoOnAmazonS3(VideoFile videoFile);
 
 	/**
 	 * Exclui o video 
