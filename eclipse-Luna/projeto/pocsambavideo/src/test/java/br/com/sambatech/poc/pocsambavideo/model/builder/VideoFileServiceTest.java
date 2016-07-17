@@ -59,7 +59,7 @@ public class VideoFileServiceTest {
 
 		AmazonS3 s3Client = buildS3Client();
 		PutObjectResult result = s3Client.putObject(new PutObjectRequest(
-				FormataParametrosUtil.recupera(PARAM_BUCKET_NAME), keyName, tempFile));
+				FormataParametrosUtil.consulta(PARAM_BUCKET_NAME), keyName, tempFile));
 		
 		Assert.assertNotNull(result);
 		
@@ -67,8 +67,8 @@ public class VideoFileServiceTest {
 
 	}
 	private AmazonS3Client buildS3Client() {
-		BasicAWSCredentials awsCredenciais = new BasicAWSCredentials(FormataParametrosUtil.recupera(PARAM_ACCESS_KEY),
-				FormataParametrosUtil.recupera(PARAM_SECRET_KEY));
+		BasicAWSCredentials awsCredenciais = new BasicAWSCredentials(FormataParametrosUtil.consulta(PARAM_ACCESS_KEY),
+				FormataParametrosUtil.consulta(PARAM_SECRET_KEY));
 		return new AmazonS3Client(awsCredenciais);
 	}
 
