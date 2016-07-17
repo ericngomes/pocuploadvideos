@@ -32,7 +32,7 @@ public class FormataParametrosUtil {
 	 * @param parametros the parametros
 	 * @return the string
 	 */
-	public static String recupera(String chaveVideo, Object... parametros){
+	public static String consulta(String chaveVideo, Object... parametros){
 		return formata(bundle.getString(chaveVideo), parametros);
 	}
 	

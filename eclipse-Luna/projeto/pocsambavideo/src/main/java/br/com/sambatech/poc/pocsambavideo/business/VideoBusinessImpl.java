@@ -70,7 +70,7 @@ public class VideoBusinessImpl implements VideoBusiness {
 		AmazonS3 amazonClientS3 = buildClientOnAmazonS3();
 
 		PutObjectRequest objetoRequest = new PutObjectRequest(
-				FormataParametrosUtil.recupera(PARAM_BUCKET_NAME), videoFile.getName(),videoFile);
+				FormataParametrosUtil.consulta(PARAM_BUCKET_NAME), videoFile.getName(),videoFile);
 		
 		objetoRequest.setCannedAcl(CannedAccessControlList.PublicRead);
 		PutObjectResult result = amazonClientS3.putObject(objetoRequest);
@@ -85,8 +85,8 @@ public class VideoBusinessImpl implements VideoBusiness {
 	 */
 	private AmazonS3Client buildClientOnAmazonS3() {
 		BasicAWSCredentials awsCredenciais = new BasicAWSCredentials(
-				FormataParametrosUtil.recupera(PARAM_ACCESS_KEY),
-				FormataParametrosUtil.recupera(PARAM_SECRET_KEY));
+				FormataParametrosUtil.consulta(PARAM_ACCESS_KEY),
+				FormataParametrosUtil.consulta(PARAM_SECRET_KEY));
 		return new AmazonS3Client(awsCredenciais);
 	}
 
@@ -118,7 +118,7 @@ public class VideoBusinessImpl implements VideoBusiness {
 
 		try {
 			ListObjectsV2Request listaObjetoV2 = new ListObjectsV2Request()
-					.withBucketName(FormataParametrosUtil.recupera(PARAM_BUCKET_NAME)).withMaxKeys(2);
+					.withBucketName(FormataParametrosUtil.consulta(PARAM_BUCKET_NAME)).withMaxKeys(2);
 			
 			ListObjectsV2Result result = new ListObjectsV2Result();
 			
@@ -160,7 +160,7 @@ public class VideoBusinessImpl implements VideoBusiness {
 			JSONArray outputs = new JSONArray();
 			JSONObject controleAcessoJson = new JSONObject();
 			controleAcessoJson.put("permission", READ_PERMISSION);
-			controleAcessoJson.put("grantee",FormataParametrosUtil.recupera(PARAM_ZENCODER_GRANTEE));
+			controleAcessoJson.put("grantee",FormataParametrosUtil.consulta(PARAM_ZENCODER_GRANTEE));
 			outputs.put(controleAcessoJson);
 			
 			buildObjetoJson(arquivoVideo, objetoJson, outputs);
@@ -250,25 +250,25 @@ public class VideoBusinessImpl implements VideoBusiness {
 	public void excluirVideoFile(VideoFile objetoSelecionado) {
 		AmazonS3 amazonS3Client = buildClientOnAmazonS3();
 		amazonS3Client.deleteObject(new DeleteObjectRequest(FormataParametrosUtil
-				.recupera(PARAM_BUCKET_NAME), objetoSelecionado.getVideoFileKey()));
+				.consulta(PARAM_BUCKET_NAME), objetoSelecionado.getVideoFileKey()));
 		
 	}
 	
 	private void buildObjetoJson(VideoFile arquivoVideo, JSONObject objetoJson,
 			JSONArray outputs) {
 		objetoJson.put("test", "true");
-		objetoJson.put("input", FormataParametrosUtil.recupera(PARAM_BUCKET_URL)
+		objetoJson.put("input", FormataParametrosUtil.consulta(PARAM_BUCKET_URL)
 				+ arquivoVideo.getVideoFileKey());
 		objetoJson.put("outputs", outputs);
 	}
 
 	private HttpPost buildHttpPost() {
 		HttpPost httpPost = new HttpPost(
-				FormataParametrosUtil.recupera(PARAM_ZENCODER_URL));
+				FormataParametrosUtil.consulta(PARAM_ZENCODER_URL));
 		
 		httpPost.setHeader("Content-Type", "application/json");
 		httpPost.setHeader("Zencoder-Api-Key",
-				FormataParametrosUtil.recupera(PARAM_ZENCODER_KEY));
+				FormataParametrosUtil.consulta(PARAM_ZENCODER_KEY));
 		return httpPost;
 	}
 }
