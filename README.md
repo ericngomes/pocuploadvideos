@@ -9,5 +9,5 @@ Em breve disponibilizarei um tutorial de como fazer a configuração no AWS</li>
 <li>
 <ul>en_US:
 This project is a real example of POC videos commit stop the cloud using the AWS EC2 with Amazon .</ul>
-Soon disponibilizarei a tutorial on how to make the setting on AWS
+Soon I will provide a tutorial on how to make the setting on AWS.
 </li>
